@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  QUOTED
+  WON
+  LOST
+}
+
+enum ServiceInterest {
+  GENERAL
+  TECH_SUPPORT
+  MAINTENANCE
+  WEB_DESIGN
+  QR_MENU
+  CUSTOM_SYSTEMS
+}
+
+model Lead {
+  id              String          @id @default(cuid())
+  name            String
+  phone           String
+  email           String
+  service         ServiceInterest @default(GENERAL)
+  message         String          @db.Text
+  origin          String          @default("website")
+  status          LeadStatus      @default(NEW)
+  internalNotes   String?         @db.Text
+  estimatedBudget String?
+  followUpStatus  String?
+  tags            String[]        @default([])
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([createdAt])
+  @@index([status, createdAt])
+  @@index([service, createdAt])
+}

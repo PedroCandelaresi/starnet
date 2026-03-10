@@ -1,36 +1,200 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# STARNET
 
-## Getting Started
+Sitio web full-stack para STARNET construido con Next.js App Router, TypeScript, Tailwind CSS, Prisma y PostgreSQL.
 
-First, run the development server:
+## Stack
+
+- Next.js 16 con App Router
+- TypeScript
+- Tailwind CSS v4
+- Prisma ORM
+- PostgreSQL
+- React Hook Form + Zod
+- ESLint
+
+## Estructura
+
+```text
+app/
+components/
+lib/
+prisma/
+public/brand/
+imagenes/
+```
+
+## Requisitos
+
+- Node.js 20 o superior
+- npm 10 o superior
+- Docker y Docker Compose para PostgreSQL local
+
+## Variables de entorno
+
+El proyecto incluye `.env.example` con la configuracion base:
+
+```env
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/starnet?schema=public"
+NEXT_PUBLIC_SITE_URL="http://localhost:3000"
+NEXT_PUBLIC_WHATSAPP_NUMBER="5492994668764"
+CONTACT_EMAIL="hola@starnet.ar"
+```
+
+Para desarrollo local ya se dejo un `.env` con esos mismos valores. Si queres cambiar algo, ajustalo segun tu entorno.
+
+## Instalacion
+
+```bash
+npm install
+```
+
+## PostgreSQL local
+
+Levantar la base con Docker:
+
+```bash
+npm run db:up
+```
+
+Detenerla:
+
+```bash
+npm run db:down
+```
+
+## Prisma
+
+Generar cliente Prisma:
+
+```bash
+npm run db:generate
+```
+
+Crear y aplicar migraciones:
+
+```bash
+npm run db:migrate -- --name init
+```
+
+Si solo queres sincronizar esquema sin migracion:
+
+```bash
+npm run db:push
+```
+
+Abrir Prisma Studio:
+
+```bash
+npm run db:studio
+```
+
+## Ejecutar el proyecto
+
+Modo desarrollo:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Lint:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run lint
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Chequeo de tipos:
 
-## Learn More
+```bash
+npm run typecheck
+```
 
-To learn more about Next.js, take a look at the following resources:
+Build de produccion:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run build
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Servidor de produccion:
 
-## Deploy on Vercel
+```bash
+npm run start
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Assets de marca
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Los originales se conservan en `imagenes/`.
+
+El proyecto normaliza los assets usados por la web en `public/brand/`:
+
+- `logo-primary.jpeg`
+- `logo-circle.jpeg`
+- `logo-horizontal.jpeg`
+- `logo-mark.jpeg`
+- `brochure-preview.png`
+- `service-web.png`
+- `service-hardware.png`
+- `service-qr.png`
+- `og-cover.jpg`
+
+Si queres reemplazar imagenes:
+
+1. Copia el nuevo archivo en `public/brand/`.
+2. Mantene el mismo nombre si no queres tocar el codigo.
+3. Si cambias el nombre, actualizalo en `lib/site-config.ts` o en los componentes que lo referencian.
+
+## Backend interno
+
+El formulario usa:
+
+- validacion cliente con React Hook Form + Zod
+- validacion y sanitizacion en servidor con Zod
+- endpoint interno en `app/api/leads/route.ts`
+- persistencia en PostgreSQL via Prisma
+- CTA para continuar por WhatsApp con mensaje prearmado
+- honeypot listo para endurecer anti-spam a futuro
+
+## Modelo Prisma
+
+El modelo principal es `Lead`, con campos para:
+
+- datos de contacto
+- servicio de interes
+- mensaje
+- origen
+- estado
+- fecha de alta
+- campos previstos para notas internas, presupuesto y seguimiento
+
+## SEO implementado
+
+- metadata por pagina
+- Open Graph basico
+- `robots.ts`
+- `sitemap.ts`
+- `manifest.ts`
+- JSON-LD tipo `ProfessionalService`
+- copy orientado a busquedas locales en Neuquen Capital
+
+## Rutas incluidas
+
+- `/`
+- `/servicios`
+- `/servicios/[slug]`
+- `/nosotros`
+- `/contacto`
+
+## Despliegue
+
+Para desplegar luego:
+
+1. Configura las variables de entorno reales.
+2. Usa una base PostgreSQL administrada o un contenedor persistente.
+3. Ejecuta migraciones con Prisma en el entorno de destino.
+4. Publica la app en Vercel, Railway, Render o infraestructura propia compatible con Next.js.
+5. Verifica `NEXT_PUBLIC_SITE_URL` con la URL final del dominio.
+
+## Notas
+
+- El diseño toma la estetica real del folleto y logos entregados.
+- La arquitectura deja espacio para agregar portfolio, blog o nuevas landings de servicio.
+- Si queres sumar envio de email, el proyecto ya deja `CONTACT_EMAIL` preparado como configuracion futura.
