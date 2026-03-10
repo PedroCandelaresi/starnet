@@ -15,7 +15,12 @@ export function WhatsAppFloat() {
       <span className="inline-flex size-10 items-center justify-center rounded-full bg-brand text-slate-950">
         <MessageCircleMore className="size-5" aria-hidden="true" />
       </span>
-      <span className="hidden sm:block">WhatsApp</span>
+      <span className="leading-none">
+        <span className="block text-sm font-semibold">WhatsApp</span>
+        <span className="mt-1 hidden text-[11px] font-medium uppercase tracking-[0.18em] text-brand/80 sm:block">
+          Respuesta rápida
+        </span>
+      </span>
     </a>
   );
 }

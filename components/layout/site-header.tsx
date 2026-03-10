@@ -30,6 +30,7 @@ export function SiteHeader() {
                   <Link
                     key={item.href}
                     href={item.href}
+                    aria-current={active ? "page" : undefined}
                     className={cn(
                       "rounded-full px-4 py-2 text-sm font-medium transition",
                       active ? "bg-white/12 text-white" : "text-slate-300 hover:bg-white/6 hover:text-white",
@@ -43,7 +44,7 @@ export function SiteHeader() {
 
             <div className="hidden items-center gap-3 lg:flex">
               <ButtonLink href={buildWhatsAppUrl()} target="_blank" variant="primary">
-                WhatsApp
+                Diagnóstico por WhatsApp
               </ButtonLink>
             </div>
 
@@ -52,6 +53,7 @@ export function SiteHeader() {
               className="inline-flex size-11 items-center justify-center rounded-full border border-white/10 bg-white/6 text-white transition hover:bg-white/10 lg:hidden"
               onClick={() => setIsOpen((current) => !current)}
               aria-expanded={isOpen}
+              aria-controls="mobile-navigation"
               aria-label={isOpen ? "Cerrar menú" : "Abrir menú"}
             >
               {isOpen ? <X className="size-5" /> : <Menu className="size-5" />}
@@ -61,7 +63,7 @@ export function SiteHeader() {
 
         {isOpen ? (
           <div className="glass-panel mt-3 overflow-hidden rounded-[1.75rem] p-4 lg:hidden">
-            <nav className="grid gap-2">
+            <nav id="mobile-navigation" className="grid gap-2">
               {navigationItems.map((item) => {
                 const active = item.href === "/" ? pathname === item.href : pathname.startsWith(item.href);
 
@@ -70,6 +72,7 @@ export function SiteHeader() {
                     key={item.href}
                     href={item.href}
                     onClick={() => setIsOpen(false)}
+                    aria-current={active ? "page" : undefined}
                     className={cn(
                       "rounded-2xl px-4 py-3 text-sm font-medium transition",
                       active ? "bg-white/12 text-white" : "text-slate-300 hover:bg-white/8 hover:text-white",
@@ -87,7 +90,7 @@ export function SiteHeader() {
               className="mt-4 w-full"
             >
               <MessageCircle className="size-4" aria-hidden="true" />
-              WhatsApp
+              Pedir diagnóstico
             </ButtonLink>
           </div>
         ) : null}

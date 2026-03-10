@@ -7,10 +7,11 @@ Sitio web full-stack para STARNET construido con Next.js App Router, TypeScript,
 - Next.js 16 con App Router
 - TypeScript
 - Tailwind CSS v4
-- Prisma ORM
+- Prisma ORM 7
 - PostgreSQL
 - React Hook Form + Zod
 - ESLint
+- Nodemailer para notificaciones opcionales por email
 
 ## Estructura
 
@@ -31,21 +32,61 @@ imagenes/
 
 ## Variables de entorno
 
-El proyecto incluye `.env.example` con la configuracion base:
+El proyecto incluye `.env.example` con la configuración completa para desarrollo y para las mejoras de fase 2:
 
 ```env
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/starnet?schema=public"
 NEXT_PUBLIC_SITE_URL="http://localhost:3000"
 NEXT_PUBLIC_WHATSAPP_NUMBER="5492994668764"
 CONTACT_EMAIL="hola@starnet.ar"
+ADMIN_SECRET="cambia-esta-clave"
+SMTP_HOST=""
+SMTP_PORT="587"
+SMTP_SECURE="false"
+SMTP_USER=""
+SMTP_PASS=""
+EMAIL_FROM=""
+EMAIL_TO=""
+LEAD_RATE_LIMIT_MAX="5"
+LEAD_RATE_LIMIT_WINDOW_MS="600000"
+NEXT_PUBLIC_TURNSTILE_SITE_KEY=""
+TURNSTILE_SECRET_KEY=""
 ```
 
-Para desarrollo local ya se dejo un `.env` con esos mismos valores. Si queres cambiar algo, ajustalo segun tu entorno.
+### Variables obligatorias
 
-## Instalacion
+- `DATABASE_URL`: conexión a PostgreSQL.
+- `NEXT_PUBLIC_SITE_URL`: URL base del sitio para canonical, OG y sitemap.
+- `NEXT_PUBLIC_WHATSAPP_NUMBER`: número usado en los CTA de WhatsApp.
+
+### Variables recomendadas
+
+- `CONTACT_EMAIL`: email visible de contacto.
+- `ADMIN_SECRET`: clave simple para proteger `/admin/leads`.
+
+### Variables opcionales
+
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_SECURE`
+- `SMTP_USER`
+- `SMTP_PASS`
+- `EMAIL_FROM`
+- `EMAIL_TO`
+
+Si las variables SMTP están completas, el sitio enviará una notificación por email cada vez que entre un lead. Si fallan o no están definidas, el lead igual se guarda en base de datos.
+
+### Anti-spam y captcha futuro
+
+- `LEAD_RATE_LIMIT_MAX`: máximo de envíos por ventana.
+- `LEAD_RATE_LIMIT_WINDOW_MS`: duración de la ventana en milisegundos.
+- `NEXT_PUBLIC_TURNSTILE_SITE_KEY` y `TURNSTILE_SECRET_KEY`: reservadas para integrar Cloudflare Turnstile en una fase posterior.
+
+## Instalación
 
 ```bash
 npm install
+cp .env.example .env
 ```
 
 ## PostgreSQL local
@@ -73,10 +114,10 @@ npm run db:generate
 Crear y aplicar migraciones:
 
 ```bash
-npm run db:migrate -- --name init
+npm run db:migrate
 ```
 
-Si solo queres sincronizar esquema sin migracion:
+Si solo querés sincronizar esquema sin migración:
 
 ```bash
 npm run db:push
@@ -108,17 +149,62 @@ Chequeo de tipos:
 npm run typecheck
 ```
 
-Build de produccion:
+Build de producción:
 
 ```bash
 npm run build
 ```
 
-Servidor de produccion:
+Servidor de producción:
 
 ```bash
 npm run start
 ```
+
+## Funcionalidades implementadas
+
+### Sitio comercial
+
+- Home con hero orientado a conversión
+- Páginas de servicios, contacto y nosotros
+- Landing dinámica por servicio en `/servicios/[slug]`
+- CTA visibles a WhatsApp en desktop y mobile
+- Branding real integrado con assets de la marca
+- SEO base con metadata, Open Graph, robots, sitemap, manifest y JSON-LD
+
+### Formulario y leads
+
+- Validación cliente y servidor con Zod
+- Sanitización básica
+- Guardado de leads en PostgreSQL vía Prisma
+- Honeypot anti-spam
+- Rate limiting básico en memoria para el endpoint de leads
+- Continuidad por WhatsApp con mensaje prearmado
+- Estructura preparada para sumar Turnstile o reCAPTCHA
+
+### Panel privado
+
+Ruta:
+
+```text
+/admin/leads
+```
+
+Características:
+
+- Protección simple por entorno usando `ADMIN_SECRET`
+- Sesión por cookie `httpOnly`
+- Listado ordenado por fecha descendente
+- Filtros por servicio y estado
+- Vista mobile y desktop
+- Estado vacío prolijo cuando no hay resultados
+
+### Notificación por email
+
+- Integración opcional con SMTP usando Nodemailer
+- El guardado en base es prioritario
+- Si el email falla, el lead igual se persiste
+- El error se registra en servidor sin romper la experiencia del usuario
 
 ## Assets de marca
 
@@ -135,45 +221,38 @@ El proyecto normaliza los assets usados por la web en `public/brand/`:
 - `service-hardware.png`
 - `service-qr.png`
 - `og-cover.jpg`
+- `icon-192.png`
+- `icon-512.png`
 
-Si queres reemplazar imagenes:
+Si querés reemplazar imágenes:
 
-1. Copia el nuevo archivo en `public/brand/`.
-2. Mantene el mismo nombre si no queres tocar el codigo.
-3. Si cambias el nombre, actualizalo en `lib/site-config.ts` o en los componentes que lo referencian.
+1. Copiá el nuevo archivo en `public/brand/`.
+2. Mantené el mismo nombre si no querés tocar el código.
+3. Si cambiás el nombre, actualizalo en `lib/site-config.ts` o en el componente que lo referencie.
 
 ## Backend interno
 
 El formulario usa:
 
-- validacion cliente con React Hook Form + Zod
-- validacion y sanitizacion en servidor con Zod
+- validación cliente con React Hook Form + Zod
+- validación y sanitización en servidor con Zod
 - endpoint interno en `app/api/leads/route.ts`
-- persistencia en PostgreSQL via Prisma
+- persistencia en PostgreSQL vía Prisma
 - CTA para continuar por WhatsApp con mensaje prearmado
-- honeypot listo para endurecer anti-spam a futuro
+- honeypot y rate limiting listos para endurecer anti-spam
+- notificación opcional por email sin afectar el guardado
 
 ## Modelo Prisma
 
 El modelo principal es `Lead`, con campos para:
 
 - datos de contacto
-- servicio de interes
+- servicio de interés
 - mensaje
 - origen
 - estado
-- fecha de alta
+- fecha de alta y actualización
 - campos previstos para notas internas, presupuesto y seguimiento
-
-## SEO implementado
-
-- metadata por pagina
-- Open Graph basico
-- `robots.ts`
-- `sitemap.ts`
-- `manifest.ts`
-- JSON-LD tipo `ProfessionalService`
-- copy orientado a busquedas locales en Neuquen Capital
 
 ## Rutas incluidas
 
@@ -182,19 +261,19 @@ El modelo principal es `Lead`, con campos para:
 - `/servicios/[slug]`
 - `/nosotros`
 - `/contacto`
+- `/admin/leads`
 
 ## Despliegue
 
-Para desplegar luego:
-
-1. Configura las variables de entorno reales.
-2. Usa una base PostgreSQL administrada o un contenedor persistente.
-3. Ejecuta migraciones con Prisma en el entorno de destino.
-4. Publica la app en Vercel, Railway, Render o infraestructura propia compatible con Next.js.
-5. Verifica `NEXT_PUBLIC_SITE_URL` con la URL final del dominio.
+1. Configurá las variables de entorno reales.
+2. Usá una base PostgreSQL administrada o un contenedor persistente.
+3. Ejecutá migraciones con Prisma en el entorno de destino.
+4. Publicá la app en Vercel, Railway, Render o infraestructura propia compatible con Next.js.
+5. Verificá `NEXT_PUBLIC_SITE_URL` con la URL final del dominio.
+6. Si activás SMTP, probá el flujo de email con credenciales reales antes de publicar.
 
 ## Notas
 
-- El diseño toma la estetica real del folleto y logos entregados.
+- El diseño toma la estética real del folleto y los logos entregados.
 - La arquitectura deja espacio para agregar portfolio, blog o nuevas landings de servicio.
-- Si queres sumar envio de email, el proyecto ya deja `CONTACT_EMAIL` preparado como configuracion futura.
+- El rate limiting actual es en memoria por instancia: para producción distribuida, conviene migrarlo a Redis o un servicio equivalente.

@@ -55,6 +55,7 @@ export function ContactForm({ origin, initialService = "GENERAL" }: ContactFormP
       message: "",
       origin,
       company: "",
+      turnstileToken: "",
     },
   });
 
@@ -101,6 +102,7 @@ export function ContactForm({ origin, initialService = "GENERAL" }: ContactFormP
         message: "",
         origin,
         company: "",
+        turnstileToken: "",
       });
     } catch (error) {
       setSubmitState({
@@ -108,14 +110,14 @@ export function ContactForm({ origin, initialService = "GENERAL" }: ContactFormP
         message:
           error instanceof Error
             ? error.message
-            : "No pudimos guardar la consulta en este momento. Proba por WhatsApp.",
+            : "No pudimos guardar la consulta en este momento. Probá por WhatsApp.",
         whatsappUrl,
       });
     }
   });
 
   return (
-    <form className="space-y-5" onSubmit={onSubmit} noValidate>
+    <form className="space-y-5" onSubmit={onSubmit} noValidate aria-busy={isSubmitting}>
       <div className="grid gap-5 md:grid-cols-2">
         <div>
           <label className="mb-2 block text-sm font-medium text-slate-200" htmlFor="name">
@@ -126,9 +128,15 @@ export function ContactForm({ origin, initialService = "GENERAL" }: ContactFormP
             className={fieldClassName}
             placeholder="Tu nombre"
             autoComplete="name"
+            aria-invalid={Boolean(errors.name)}
+            aria-describedby={errors.name ? "name-error" : undefined}
             {...register("name")}
           />
-          {errors.name ? <p className="mt-2 text-sm text-rose-300">{errors.name.message}</p> : null}
+          {errors.name ? (
+            <p id="name-error" className="mt-2 text-sm text-rose-300">
+              {errors.name.message}
+            </p>
+          ) : null}
         </div>
 
         <div>
@@ -141,9 +149,15 @@ export function ContactForm({ origin, initialService = "GENERAL" }: ContactFormP
             placeholder="+54 9 ..."
             inputMode="tel"
             autoComplete="tel"
+            aria-invalid={Boolean(errors.phone)}
+            aria-describedby={errors.phone ? "phone-error" : undefined}
             {...register("phone")}
           />
-          {errors.phone ? <p className="mt-2 text-sm text-rose-300">{errors.phone.message}</p> : null}
+          {errors.phone ? (
+            <p id="phone-error" className="mt-2 text-sm text-rose-300">
+              {errors.phone.message}
+            </p>
+          ) : null}
         </div>
       </div>
 
@@ -158,23 +172,39 @@ export function ContactForm({ origin, initialService = "GENERAL" }: ContactFormP
             placeholder="tuemail@dominio.com"
             inputMode="email"
             autoComplete="email"
+            aria-invalid={Boolean(errors.email)}
+            aria-describedby={errors.email ? "email-error" : undefined}
             {...register("email")}
           />
-          {errors.email ? <p className="mt-2 text-sm text-rose-300">{errors.email.message}</p> : null}
+          {errors.email ? (
+            <p id="email-error" className="mt-2 text-sm text-rose-300">
+              {errors.email.message}
+            </p>
+          ) : null}
         </div>
 
         <div>
           <label className="mb-2 block text-sm font-medium text-slate-200" htmlFor="service">
             Servicio de interés
           </label>
-          <select id="service" className={fieldClassName} {...register("service")}>
+          <select
+            id="service"
+            className={fieldClassName}
+            aria-invalid={Boolean(errors.service)}
+            aria-describedby={errors.service ? "service-error" : undefined}
+            {...register("service")}
+          >
             {leadServiceOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>
             ))}
           </select>
-          {errors.service ? <p className="mt-2 text-sm text-rose-300">{errors.service.message}</p> : null}
+          {errors.service ? (
+            <p id="service-error" className="mt-2 text-sm text-rose-300">
+              {errors.service.message}
+            </p>
+          ) : null}
         </div>
       </div>
 
@@ -187,9 +217,15 @@ export function ContactForm({ origin, initialService = "GENERAL" }: ContactFormP
           className={cn(fieldClassName, "min-h-36 resize-y")}
           placeholder="Contanos qué necesitás, el estado del equipo o el objetivo del proyecto."
           autoComplete="off"
+          aria-invalid={Boolean(errors.message)}
+          aria-describedby={errors.message ? "message-error" : undefined}
           {...register("message")}
         />
-        {errors.message ? <p className="mt-2 text-sm text-rose-300">{errors.message.message}</p> : null}
+        {errors.message ? (
+          <p id="message-error" className="mt-2 text-sm text-rose-300">
+            {errors.message.message}
+          </p>
+        ) : null}
       </div>
 
       <input type="hidden" {...register("origin")} defaultValue={origin} />
@@ -197,6 +233,7 @@ export function ContactForm({ origin, initialService = "GENERAL" }: ContactFormP
         <label htmlFor="company">Empresa</label>
         <input id="company" tabIndex={-1} autoComplete="off" {...register("company")} />
       </div>
+      <input type="hidden" {...register("turnstileToken")} defaultValue="" />
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <button
@@ -212,6 +249,7 @@ export function ContactForm({ origin, initialService = "GENERAL" }: ContactFormP
           href={submitState?.whatsappUrl ?? whatsappUrl}
           target="_blank"
           rel="noreferrer"
+          aria-label="Continuar la consulta por WhatsApp"
           className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/12 bg-white/6 px-6 text-sm font-semibold text-white transition hover:border-brand/40 hover:bg-white/10"
         >
           <MessageCircleMore className="size-4" aria-hidden="true" />

@@ -11,6 +11,17 @@ export const leadServiceValues = [
 
 export type LeadService = (typeof leadServiceValues)[number];
 
+export const leadStatusValues = [
+  "NEW",
+  "CONTACTED",
+  "QUALIFIED",
+  "QUOTED",
+  "WON",
+  "LOST",
+] as const;
+
+export type LeadStatusValue = (typeof leadStatusValues)[number];
+
 export const leadServiceLabels: Record<LeadService, string> = {
   GENERAL: "Quiero asesoramiento general",
   TECH_SUPPORT: "Servicio técnico en computadoras y notebooks",
@@ -23,6 +34,20 @@ export const leadServiceLabels: Record<LeadService, string> = {
 export const leadServiceOptions = leadServiceValues.map((value) => ({
   value,
   label: leadServiceLabels[value],
+}));
+
+export const leadStatusLabels: Record<LeadStatusValue, string> = {
+  NEW: "Nuevo",
+  CONTACTED: "Contactado",
+  QUALIFIED: "Calificado",
+  QUOTED: "Presupuestado",
+  WON: "Cerrado ganado",
+  LOST: "Cerrado perdido",
+};
+
+export const leadStatusOptions = leadStatusValues.map((value) => ({
+  value,
+  label: leadStatusLabels[value],
 }));
 
 const normalizeSpaces = (value: string) => value.replace(/\s+/g, " ").trim();
@@ -77,6 +102,11 @@ export const leadFormSchema = z.object({
     .optional()
     .transform((value) => sanitizeInline(value ?? ""))
     .pipe(z.string().max(200)),
+  turnstileToken: z
+    .string()
+    .optional()
+    .transform((value) => sanitizeInline(value ?? ""))
+    .pipe(z.string().max(2048)),
 });
 
 export type LeadFormInput = z.input<typeof leadFormSchema>;

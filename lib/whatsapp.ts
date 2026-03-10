@@ -8,10 +8,10 @@ export function buildWhatsAppUrl(data?: Partial<LeadFormValues> & { service?: Le
   const lines = [
     `Hola STARNET, quiero consultar por ${leadServiceLabels[service]}.`,
     data?.name ? `Nombre: ${data.name}` : null,
-    data?.phone ? `Telefono: ${data.phone}` : null,
+    data?.phone ? `Teléfono: ${data.phone}` : null,
     data?.email ? `Email: ${data.email}` : null,
     data?.message ? `Mensaje: ${data.message}` : null,
-    `Ubicacion de referencia: ${siteConfig.location}`,
+    `Ubicación de referencia: ${siteConfig.location}`,
   ].filter(Boolean);
 
   return `https://wa.me/${normalizeWhatsappNumber(siteConfig.whatsappNumber)}?text=${encodeURIComponent(

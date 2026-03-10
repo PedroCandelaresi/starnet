@@ -16,9 +16,12 @@ export function SiteFooter() {
             STARNET impulsa soporte técnico y soluciones digitales con una base clara, profesional y lista para crecer.
             Trabajamos con foco en conversión, orden operativo y buena experiencia para cada cliente.
           </p>
+          <div className="rounded-[1.6rem] border border-brand/20 bg-brand/10 p-4 text-sm leading-7 text-slate-200">
+            WhatsApp directo, diagnóstico claro y una implementación prolija para cada servicio.
+          </div>
           <div className="flex flex-wrap gap-3">
             <ButtonLink href={buildWhatsAppUrl()} target="_blank">
-              Solicitar asesoramiento
+              Hablar por WhatsApp
             </ButtonLink>
             <ButtonLink href="/contacto" variant="secondary">
               Formulario de contacto

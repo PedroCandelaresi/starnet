@@ -13,6 +13,7 @@ RUN --mount=type=secret,id=app_env,target=/run/secrets/app_env \
     set -a \
     && . /run/secrets/app_env \
     && set +a \
+    && npm run db:generate \
     && npm run build
 
 FROM node:22-alpine AS runner

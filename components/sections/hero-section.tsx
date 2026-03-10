@@ -15,19 +15,18 @@ export function HeroSection() {
           <div>
             <span className="eyebrow">Neuquén Capital · Soluciones reales</span>
             <h1 className="mt-6 max-w-4xl text-balance text-4xl font-semibold leading-tight text-white sm:text-5xl lg:text-6xl">
-              Soporte técnico y soluciones digitales con enfoque profesional y comercial.
+              Soporte técnico y desarrollo digital para negocios que necesitan resolver, vender y crecer.
             </h1>
             <p className="mt-6 max-w-2xl text-pretty text-lg leading-8 text-slate-300 sm:text-xl">
-              En STARNET resolvemos fallas en equipos, mejoramos rendimiento y desarrollamos activos digitales que ayudan a captar clientes.
-              Todo con una base moderna, clara y lista para crecer.
+              Desde una notebook con fallas hasta una web pensada para captar clientes, STARNET combina criterio técnico, rapidez comercial y una implementación lista para producción.
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <ButtonLink href={buildWhatsAppUrl()} target="_blank" size="lg">
-                Escribir por WhatsApp
+                Solicitar diagnóstico por WhatsApp
               </ButtonLink>
               <ButtonLink href="/contacto" size="lg" variant="secondary">
-                Dejar una consulta
+                Quiero una propuesta
               </ButtonLink>
             </div>
 
@@ -79,9 +78,9 @@ export function HeroSection() {
 
                   <div className="rounded-[1.6rem] border border-brand/20 bg-brand/10 p-5">
                     <p className="text-sm uppercase tracking-[0.22em] text-brand/80">WhatsApp directo</p>
-                    <p className="mt-3 text-2xl font-semibold text-white">Canal rápido para consultas y seguimiento</p>
+                    <p className="mt-3 text-2xl font-semibold text-white">Consultas rápidas, respuesta clara y siguiente paso definido</p>
                     <p className="mt-3 text-sm leading-7 text-slate-200">
-                      CTA visibles, mensaje prearmado y una experiencia orientada a convertir visitas en conversaciones reales.
+                      CTA visibles, mensaje prearmado y un flujo pensado para transformar visitas en conversaciones útiles.
                     </p>
                   </div>
 

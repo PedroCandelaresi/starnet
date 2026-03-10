@@ -45,7 +45,7 @@ export function ContactPanel({ title, description, origin, initialService }: Con
                   <Clock3 className="mt-1 size-4 text-brand" aria-hidden="true" />
                   <div>
                     <p className="font-semibold text-white">Respuesta esperada</p>
-                    <p className="text-slate-300">Canal rápido por WhatsApp y formulario listo para seguimiento.</p>
+                    <p className="text-slate-300">Canal rápido por WhatsApp, seguimiento ordenado y próximos pasos claros.</p>
                   </div>
                 </div>
                 {siteConfig.contactEmail ? (
@@ -64,12 +64,15 @@ export function ContactPanel({ title, description, origin, initialService }: Con
               <div className="mt-8">
                 <ButtonLink href={buildWhatsAppUrl()} target="_blank" variant="secondary">
                   <MessageCircleMore className="size-4" aria-hidden="true" />
-                  Abrir WhatsApp
+                  Quiero respuesta por WhatsApp
                 </ButtonLink>
               </div>
             </div>
 
             <div className="rounded-[1.8rem] border border-white/10 bg-slate-950/45 p-5 sm:p-7">
+              <div className="mb-6 rounded-[1.4rem] border border-brand/20 bg-brand/10 p-4 text-sm leading-7 text-slate-200">
+                Contanos tu necesidad y te devolvemos una respuesta concreta: diagnóstico, alcance y mejor canal para avanzar.
+              </div>
               <ContactForm origin={origin} initialService={initialService} />
             </div>
           </div>
