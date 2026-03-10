@@ -1,0 +1,34 @@
+name: Deploy STARNET
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    env:
+      DOCKER_BUILDKIT: "1"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check front .env exists
+        run: ls -l /home/starnet/env/front/.env
+
+      - name: Build STARNET image (with secret)
+        working-directory: /home/starnet/actions-runner/_work/starnet/starnet
+        run: |
+          docker build \
+            --secret id=app_env,src=/home/starnet/env/front/.env \
+            -t starnet:latest .
+
+      - name: Up STARNET with compose
+        run: docker compose -f /home/starnet/deploy/docker-compose.yml up -d starnet
+
+      - name: Run Prisma migrations
+        run: docker compose -f /home/starnet/deploy/docker-compose.yml exec -T starnet npx prisma migrate deploy
+
+      - name: Prune old images
+        run: docker image prune -f
